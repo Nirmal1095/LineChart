@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Chart Project</title>
+    <style>
+      body{
+        background-color: hsl(277, 14%, 89%);
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Chart Project</h2>
+    <canvas id="bcChart"></canvas>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <script src="data.js"></script>
+  <script>
+  COUNTRY = [];
+  CATEGORY = [];
+  DATASET = {};
+  JSONDATA.forEach(function(d){
+    if(d.country != "" &&  COUNTRY.indexOf(d.country)===-1){
+      COUNTRY.push(d.country);
+      var color = 'rgb('+getRandomColor()+', '+getRandomColor()+', '+getRandomColor()+')';
+      DATASET[d.country] = {label: d.country, data: [], borderColor: color,backgroundColor: color, fill: false};
+    }
+    if(d.sector != "" &&  CATEGORY.indexOf(d.sector)===-1){
+      CATEGORY.push(d.sector);
+    }
+    if(d.country != "" && d.sector != ""){
+      var indexOfCategory = CATEGORY.indexOf(d.sector)
+      if(DATASET[d.country]['data'].length<CATEGORY.length){
+        for(var i = 0; i<CATEGORY.length; i++){
+          if(!DATASET[d.country]['data'][i]){
+            DATASET[d.country]['data'][i] = 0;
+          }
+        }
+      }
+      DATASET[d.country]['data'][indexOfCategory] += 1;
+    }
+  });
+
+   var finalData = [];
+   for(d in DATASET){
+     for(var i = 0; i<CATEGORY.length; i++){
+       if(!DATASET[d].data[i]){
+         DATASET[d].data[i] = 0;
+       }
+     }
+     finalData.push(DATASET[d]);
+   }
+  var ctx = document.getElementById('bcChart').getContext('2d');
+  var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: CATEGORY,
+        datasets: finalData
+    },
+  });
+
+  function getRandomColor(){
+    return Math.floor(Math.random()*1000);
+  }
+  </script>
+</html>
